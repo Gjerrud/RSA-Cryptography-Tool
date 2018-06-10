@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title>Cryptography</title>
+	  <script language=JavaScript>
+
+		function mpmod(base, exponent, modulo) {
+		  if ((base < 1) || (exponent < 0) || (modulo < 1)) {
+		    return("invalid");
+		  }
+		  result = 1;
+		  while (exponent > 0) {
+		    if ((exponent % 2) == 1) {
+		      result = (result * base) % modulo;
+		    }
+		    base = (base * base) % modulo;
+		    exponent = Math.floor(exponent / 2);
+		  }
+		return (result);
+		}
+
+		function eulerphi(x) {
+		  result = 0;
+		  for (i = 1; i < x; i++) {
+		    if (isunit(i,x)) {
+		      result++;
+		    }
+		  }
+		  return (result);
+		}
+
+    
+
+    function gcd(x, y) {
+		  x = Math.abs(x);
+		  y = Math.abs(y);
+		  while(y) {
+		    var t = y;
+		    y = x % y;
+		    x = t;
+		  }
+		  return x;
+		}
+
+    function totient(x, y) {
+		  return (x-1)*(y-1);
+		}
+
+    function modulus(x, y) {
+		  return x*y;
+		}
+
+    function eExponent(x, y) {
+			var temp = totient(x, y);
+			for(i = 3; i<temp; i++){
+				if(gcd(i, temp) == 1){
+					return i;
+				}
+			}
+			return 0;
+		}
+
+		function dExponent(x, y) {
+			var tempphi = totient(x, y);
+      var tempe = eExponent(x, y);
+			for(i = 3; i<tempphi; i++){
+				if((i*tempe)%tempphi == 1){
+					return i;
+				}
+			}
+			return 0;
+		}
+
+		function letterValue(str, e, n){
+    		var exponent = parseInt(e);
+    		var modulo = parseInt(n);
+		    var anum={
+		        a: Math.pow(1, exponent)%modulo, b: Math.pow(2, exponent)%modulo, c: Math.pow(3, exponent)%modulo, d: Math.pow(4, exponent)%modulo, e: Math.pow(5, exponent)%modulo, f: Math.pow(6, exponent)%modulo,
+						g: Math.pow(7, exponent)%modulo, h: Math.pow(8, exponent)%modulo, i: Math.pow(9, exponent)%modulo, j: Math.pow(10, exponent)%modulo, k: Math.pow(11, exponent)%modulo,
+		        l: Math.pow(12, exponent)%modulo, m: Math.pow(13, exponent)%modulo, n: Math.pow(14, exponent)%modulo,o: Math.pow(15, exponent)%modulo, p: Math.pow(16, exponent)%modulo,
+						q: Math.pow(17, exponent)%modulo, r: Math.pow(18, exponent)%modulo, s: Math.pow(19, exponent)%modulo, t: Math.pow(20, exponent)%modulo,
+		        u: Math.pow(21, exponent)%modulo, v: Math.pow(22, exponent)%modulo, w: Math.pow(23, exponent)%modulo, x: Math.pow(24, exponent)%modulo, y: Math.pow(25, exponent)%modulo, z: Math.pow(26, exponent)%modulo
+				 }
+				var output = "";
+				var inc = 1;
+				var size = 0;
+				for(i = 0; i<str.length; i++){
+					var num = anum[str.substring(i, inc)].toString();
+					if(num.toString().length>size){
+						size = num.toString().length;
+					}
+     			if(num.length<2){
+						num="0"+num;
+					}
+					output = output + num;
+					inc++;
+				}
+				return output;
+		    //return str.split('').map(letterValue);
+		}
+
+    function numChar(str, d, n){
+    		var exponent = parseInt(d);
+    		var modulo = parseInt(n);
+        var inc = 2;
+				var output = "";
+				for(i = 0; i<str.length; i++){
+					var chara = str.substring(i, inc);
+					var dec = Math.pow(chara, exponent)%modulo;
+					output = output + String.fromCharCode(96+parseInt(dec));
+					i++;
+					inc = inc+2;
+				}
+				return output;
+		}
+
+		var doccolor="ff80ff";
+		function shadetd(alignment) {
+		    document.write("<td bgcolor="+doccolor+" align="+alignment+">");}
+
+		</script>
+
+  </head>
+	<body bgcolor=ffffff>
+
+	<form name=powermod>
+	<table border=1 align=center>
+  <tr><td>
+  <h2><b>RSA tool</b></h2>
+  <h3>(NB: Prototype! Only works with small letters)</h3>
+	</td></tr>
+  <tr><td>
+  <h3><b>Part 1: Enter prime numbers and calculate values</b></h3>
+	</td></tr>
+	<tr><td>
+  Enter two prime numbers: p
+  <input type=number value="3" name=first>
+	and q
+  <input type=number value="11" name=second>
+	</td></tr>
+  <tr><td>
+	<input type="button" value="Find n" onClick="nres.value=modulus(first.value, second.value);">
+	<input type="text" name="nres" value="">Modulus: n = p x q
+	</td></tr>
+  <tr><td>
+	<input type="button" value="Find &Phi;(n)" onClick="phires.value=totient(first.value, second.value);">
+	<input type="text" name="phires" value="">Totient: &Phi;(n) = (p-1) x (q-1)
+	</td></tr>
+  <tr><td>
+	<input type="button" value="Find gcd" onClick="gcdres.value=gcd(first.value, second.value);">
+	<input type="text" name="gcdres" value="">Greatest common divisor
+	</td></tr>
+  <tr><td>
+	<input type="button" value="Find e" onClick="eres.value=eExponent(first.value, second.value);">
+	<input type="text" name="eres" value="">Public exponent: 1 < e < &Phi;(n) and gcd(φ(n), e) = 1
+	</td></tr>
+  <tr><td>
+  <input type="button" value="Find d" onClick="dres.value=dExponent(first.value, second.value);">
+	<input type="text" name="dres" value="">Private exponent: (d x e) mod &Phi;(n) = 1 (or d ≡ e<sup>-1</sup>(mod &Phi;(n)))
+	</td></tr>
+  <tr><td>
+  <input type="button" value="Generate keys" onClick="publickey.value='Public key: [e = '+eres.value+', n = '+nres.value+']';
+	privatekey.value='Private key: [d = '+dres.value+', n = '+nres.value+']';">
+  <input type="text" name="publickey" value="">
+  <input type="text" name="privatekey" value="">
+  <input type="button" value="Autofill" onClick="
+	nres.value=modulus(first.value, second.value);
+	phires.value=totient(first.value, second.value);
+	gcdres.value=gcd(first.value, second.value);
+	eres.value=eExponent(first.value, second.value);
+	dres.value=dExponent(first.value, second.value);
+	publickey.value='Public key: [e = '+eres.value+', n = '+nres.value+']';
+	privatekey.value='Private key: [d = '+dres.value+', n = '+nres.value+']';">
+  </td></tr>
+	<tr><td>
+  <h3><b>Part 2: Message encryption</b></h3>
+	</td></tr>
+	<tr>
+	<td>Message:
+	<input type=text value="t" name=pmbase>
+	</td>	</tr>
+	<tr><td>
+	<input type=button value="Encrypt" onClick="pmout.value=letterValue(pmbase.value, eres.value, nres.value);
+	encmes.value=pmout.value;">
+  <input type=text value="" name=pmout
+	onChange="pmout.value='';"> C = M<sup>e</sup> mod n
+	</td>
+	</tr>
+  <tr><td>
+  <h3><b>Part 3: Message decryption</b></h3>
+	</td></tr>
+  <tr><td>
+	Message:
+	<input type="text" name="encmes" value="">
+  </td></tr>
+  <tr><td>
+  <input type="button" value="Decrypt" onClick="decmes.value=numChar(encmes.value, dres.value, nres.value);">
+  <input type="text" name="decmes" value=""> M = C<sup>d</sup> mod n
+  </td></tr>
+	</table>
+	</form>
+	</body>
+</html>
+
